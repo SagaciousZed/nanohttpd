@@ -1,8 +1,21 @@
 package fi.iki.elonen;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.StringTokenizer;
 
 public class SimpleWebServer extends NanoHTTPD {
     /**
@@ -35,6 +48,7 @@ public class SimpleWebServer extends NanoHTTPD {
         put("mp3", "audio/mpeg");
         put("m3u", "audio/mpeg-url");
         put("mp4", "video/mp4");
+        put("mkv", "video/x-matroska");
         put("ogv", "video/ogg");
         put("flv", "video/x-flv");
         put("mov", "video/quicktime");
@@ -99,7 +113,7 @@ public class SimpleWebServer extends NanoHTTPD {
         // Defaults
         int port = 8080;
 
-        String host = "127.0.0.1";
+        String host = null;
         List<File> rootDirs = new ArrayList<File>();
         boolean quiet = false;
         Map<String, String> options = new HashMap<String, String>();
@@ -219,7 +233,8 @@ public class SimpleWebServer extends NanoHTTPD {
         return newUri;
     }
 
-    public Response serve(IHTTPSession session) {
+    @Override
+	public Response serve(IHTTPSession session) {
         Map<String, String> header = session.getHeaders();
         Map<String, String> parms = session.getParms();
         String uri = session.getUri();
